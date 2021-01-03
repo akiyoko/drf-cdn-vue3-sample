@@ -29,6 +29,37 @@
 </head>
 <body>
 <div id="app" v-cloak>
+  <!-- ヘッダナビゲーション -->
+  <div id="header">
+    <b-navbar type="dark" variant="dark">
+      <a class="navbar-brand" href="/">DRF Sample</a>
+      <b-navbar-nav class="ml-auto">
+        {% if user.is_authenticated %}
+        <b-nav-item-dropdown right>
+          <template slot="button-content">{{ user.get_username }}</template>
+          <b-dropdown-item href="{% url 'rest_framework:logout' %}">ログアウト</b-dropdown-item>
+        </b-nav-item-dropdown>
+        {% else %}
+        <b-nav-item href="{% url 'rest_framework:login' %}">ログイン</b-nav-item>
+        {% endif %}
+      </b-navbar-nav>
+    </b-navbar>
+  </div>
+
+  <!-- メッセージエリア -->
+  <div id="messages">
+    <b-alert variant="danger" show v-show="message.error" class="mb-0">
+      ${ message.error }
+    </b-alert>
+    <b-alert
+      variant="warning" show v-show="message.warnings.length > 0" class="mb-0">
+      <p v-for="warning in message.warnings" class="mb-0">${ warning }</p>
+    </b-alert>
+    <b-alert variant="info" show v-show="message.info" class="mb-0">
+      ${ message.info }
+    </b-alert>
+  </div>
+
   <!-- メインエリア -->
   <div id="main-page">
     <main class="container">
