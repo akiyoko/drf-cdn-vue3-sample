@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>DRF Sample</title>
+  <!-- CSS -->
+  <!-- BootstrapVue -->
+  <link rel="stylesheet" href="https://unpkg.com/bootstrap@4.5.3/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/bootstrap-vue@2.21.2/dist/bootstrap-vue.min.css"/>
+  <style>
+    main.container {
+      border: 1px solid #cccccc;
+      margin-top: 4em;
+      padding: 2em;
+      width: 600px;
+    }
+
+    .container.debug {
+      margin-top: 2em;
+    }
+
+    [v-cloak] {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+<div id="app" v-cloak>
+  <!-- メインエリア -->
+  <div id="main-page">
+    <main class="container">
+      <p class="h5 mb-4">ホーム</p>
+      <form @submit.prevent="submitSave">
+        <div class="row form-group">
+          <label class="col-sm-3 col-form-label">タイトル</label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" v-model="form.book.title">
+          </div>
+        </div>
+        <div class="row form-group">
+          <label class="col-sm-3 col-form-label">価格</label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" v-model="form.book.price">
+          </div>
+        </div>
+        <div class="row text-center mt-5">
+          <div class="col-sm-12">
+            <button type="submit" variant="primary">
+              ${ isCreated ? '更新' : '登録' }
+            </button>
+          </div>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <!-- デバッグ -->
+  <div id="debug">
+    <div class="container debug">
+      <pre>form: ${ form }</pre>
+      <pre>message: ${ message }</pre>
+    </div>
+  </div>
+</div>
+
+<!-- JS -->
+<!-- Vue & BootstrapVue -->
+<script src="https://unpkg.com/babel-polyfill@6.26.0/dist/polyfill.min.js"></script>
+<script src="https://unpkg.com/vue@3.0.5/dist/vue.global.prod.js"></script>
+<!--<script src="https://unpkg.com/vue@2.6.12/dist/vue.min.js"></script>-->
+<!--<script src="https://unpkg.com/bootstrap-vue@2.21.2/dist/bootstrap-vue.min.js"></script>-->
+<!-- axios -->
+<script src="https://unpkg.com/axios@0.21.1/dist/axios.min.js"></script>
+<script>
+  // CSRFトークンの送信設定
+  axios.defaults.xsrfCookieName = 'csrftoken'
+  axios.defaults.xsrfHeaderName = 'X-CSRFToken'
+
+  // APIクライアント
+  const api = axios.create({
+    baseURL: '/api/v1/',
+    timeout: 5000,
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+
+  // Vueインスタンスを作成
+  const app = Vue.createApp({
+    // Mustache構文のバッティングを回避
+    delimiters: ['${', '}'],
+    setup() {
+      // data
+      const form = Vue.reactive({
+        book: {
+          title: '',
+          price: 0
+        }
+      })
+      const message = Vue.reactive({
+        info: '',
+        warnings: [],
+        error: ''
+      })
+
+      // computed
+      const isCreated = Vue.computed(() => {
+        return form.book.id !== undefined
+      })
+
+      // methods
+      const clearMessages = () => {
+        message.error = ''
+        message.warnings = []
+        message.info = ''
+      }
+      const submitSave = () => {
+        clearMessages()
+        api({
+          // 登録済みかどうかでHTTPメソッドとエンドポイントを切り替える
+          method: isCreated.value ? 'put' : 'post',
+          url: isCreated.value ? '/books/' + form.book.id + '/' : '/books/',
+          data: {
+            'id': form.book.id,
+            'title': form.book.title,
+            'price': form.book.price
+          }
+        })
+          .then(response => {
+            message.info = isCreated.value ? '更新しました。' : '登録しました。'
+            form.book = response.data
+          })
+          .catch(error => {
+            const status = error.response ? error.response.status : 500
+            if (status === 400) {
+              // バリデーションNG
+              message.warnings = [].concat.apply(
+                [], Object.values(error.response.data))
+            } else if (status === 401) {
+              // 認証エラー
+              message.error = '認証エラー'
+            } else if (status === 403) {
+              // 権限エラー
+              message.error = '権限エラーです。'
+            } else {
+              // その他のエラー
+              message.error = '想定外のエラーです。'
+            }
+          })
+      }
+      return {
+        form,
+        message,
+        isCreated,
+        clearMessages,
+        submitSave
+      }
+    },
+  }).mount('#app')
+</script>
+</body>
+</html>
