@@ -8,8 +8,8 @@
   <title>DRF Sample</title>
   <!-- CSS -->
   <!-- BootstrapVue -->
-  <link rel="stylesheet" href="https://unpkg.com/bootstrap@4.5.3/dist/css/bootstrap.min.css"/>
-  <link rel="stylesheet" href="https://unpkg.com/bootstrap-vue@2.21.2/dist/bootstrap-vue.min.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/bootstrap-vue@2.21.2/dist/bootstrap-vue.min.css" />
   <style>
     main.container {
       border: 1px solid #cccccc;
@@ -37,10 +37,14 @@
         {% if user.is_authenticated %}
         <b-nav-item-dropdown right>
           <template slot="button-content">{{ user.get_username }}</template>
-          <b-dropdown-item href="{% url 'rest_framework:logout' %}">ログアウト</b-dropdown-item>
+          <b-dropdown-item href="{% url 'rest_framework:logout' %}">
+            ログアウト
+          </b-dropdown-item>
         </b-nav-item-dropdown>
         {% else %}
-        <b-nav-item href="{% url 'rest_framework:login' %}">ログイン</b-nav-item>
+        <b-nav-item href="{% url 'rest_framework:login' %}">
+          ログイン
+        </b-nav-item>
         {% endif %}
       </b-navbar-nav>
     </b-navbar>
@@ -51,9 +55,10 @@
     <b-alert variant="danger" show v-show="message.error" class="mb-0">
       ${ message.error }
     </b-alert>
-    <b-alert
-      variant="warning" show v-show="message.warnings.length > 0" class="mb-0">
-      <p v-for="warning in message.warnings" class="mb-0">${ warning }</p>
+    <b-alert variant="warning" show v-show="message.warnings.length > 0" class="mb-0">
+      <p v-for="warning in message.warnings" :key="warning" class="mb-0">
+        ${ warning }
+      </p>
     </b-alert>
     <b-alert variant="info" show v-show="message.info" class="mb-0">
       ${ message.info }
@@ -68,13 +73,13 @@
         <div class="row form-group">
           <label class="col-sm-3 col-form-label">タイトル</label>
           <div class="col-sm-8">
-            <input type="text" class="form-control" v-model="form.book.title">
+            <input type="text" class="form-control" v-model="form.book.title" />
           </div>
         </div>
         <div class="row form-group">
           <label class="col-sm-3 col-form-label">価格</label>
           <div class="col-sm-8">
-            <input type="text" class="form-control" v-model="form.book.price">
+            <input type="text" class="form-control" v-model="form.book.price" />
           </div>
         </div>
         <div class="row text-center mt-5">
@@ -101,97 +106,98 @@
 <!-- Vue & BootstrapVue -->
 <script src="https://unpkg.com/babel-polyfill@6.26.0/dist/polyfill.min.js"></script>
 <script src="https://unpkg.com/vue@3.0.5/dist/vue.global.prod.js"></script>
-<!--<script src="https://unpkg.com/vue@2.6.12/dist/vue.min.js"></script>-->
 <!--<script src="https://unpkg.com/bootstrap-vue@2.21.2/dist/bootstrap-vue.min.js"></script>-->
 <!-- axios -->
 <script src="https://unpkg.com/axios@0.21.1/dist/axios.min.js"></script>
 <script>
   // CSRFトークンの送信設定
-  axios.defaults.xsrfCookieName = 'csrftoken'
-  axios.defaults.xsrfHeaderName = 'X-CSRFToken'
+  axios.defaults.xsrfCookieName = "csrftoken";
+  axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
   // APIクライアント
   const api = axios.create({
-    baseURL: '/api/v1/',
+    baseURL: "/api/v1/",
     timeout: 5000,
     headers: {
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest'
+      "Content-Type": "application/json",
+      "X-Requested-With": "XMLHttpRequest"
     }
-  })
+  });
 
   // Vueインスタンスを作成
   const app = Vue.createApp({
     // Mustache構文のバッティングを回避
-    delimiters: ['${', '}'],
+    delimiters: ["${", "}"],
     setup() {
       // data
       const form = Vue.reactive({
         book: {
-          title: '',
+          title: "",
           price: 0
         }
-      })
+      });
       const message = Vue.reactive({
-        info: '',
+        info: "",
         warnings: [],
-        error: ''
-      })
+        error: ""
+      });
 
       // computed
       const isCreated = Vue.computed(() => {
-        return form.book.id !== undefined
-      })
+        return form.book.id !== undefined;
+      });
 
       // methods
       const clearMessages = () => {
-        message.error = ''
-        message.warnings = []
-        message.info = ''
-      }
+        message.error = "";
+        message.warnings = [];
+        message.info = "";
+      };
       const submitSave = () => {
-        clearMessages()
+        clearMessages();
         api({
           // 登録済みかどうかでHTTPメソッドとエンドポイントを切り替える
-          method: isCreated.value ? 'put' : 'post',
-          url: isCreated.value ? '/books/' + form.book.id + '/' : '/books/',
+          method: isCreated.value ? "put" : "post",
+          url: isCreated.value ? "/books/" + form.book.id + "/" : "/books/",
           data: {
-            'id': form.book.id,
-            'title': form.book.title,
-            'price': form.book.price
+            id: form.book.id,
+            title: form.book.title,
+            price: form.book.price
           }
         })
           .then(response => {
-            message.info = isCreated.value ? '更新しました。' : '登録しました。'
-            form.book = response.data
+            message.info = isCreated.value ? "更新しました。" : "登録しました。";
+            form.book = response.data;
           })
           .catch(error => {
-            const status = error.response ? error.response.status : 500
+            const status = error.response ? error.response.status : 500;
             if (status === 400) {
               // バリデーションNG
               message.warnings = [].concat.apply(
-                [], Object.values(error.response.data))
+                [],
+                Object.values(error.response.data)
+              );
             } else if (status === 401) {
               // 認証エラー
-              message.error = '認証エラー'
+              message.error = "認証エラー";
             } else if (status === 403) {
               // 権限エラー
-              message.error = '権限エラーです。'
+              message.error = "権限エラーです。";
             } else {
               // その他のエラー
-              message.error = '想定外のエラーです。'
+              message.error = "想定外のエラーです。";
             }
-          })
-      }
+          });
+      };
       return {
         form,
         message,
         isCreated,
         clearMessages,
         submitSave
-      }
-    },
-  }).mount('#app')
+      };
+    }
+  }).mount("#app");
 </script>
 </body>
 </html>
