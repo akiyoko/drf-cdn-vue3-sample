@@ -15,17 +15,15 @@
   <!--<link rel="stylesheet" href="https://unpkg.com/bootstrap-vue-3@0.1.9/dist/bootstrap-vue-3.css" />-->
   <!--  <link rel="stylesheet" href="https://unpkg.com/bootstrap-vue@2.21.2/dist/bootstrap-vue.min.css" />-->
   <style>
-    main.container {
+    main.box {
       border: 1px solid #cccccc;
       margin-top: 4em;
       padding: 2em;
       width: 600px;
     }
-
-    .container.debug {
+    div#debug {
       margin-top: 2em;
     }
-
     [v-cloak] {
       display: none;
     }
@@ -71,7 +69,7 @@
 
   <!-- メインエリア -->
   <div id="main-page">
-    <main class="container">
+    <main class="container box">
       <p class="h5 mb-4">ホーム</p>
       <form @submit.prevent="submitSave">
         <div class="row form-group">
@@ -99,14 +97,14 @@
 
   <!-- デバッグ -->
   <div id="debug">
-    <div class="container debug">
+    <main class="container">
       <pre>bookTitle: ${ bookTitle }</pre>
       <pre>bookPrice: ${ bookPrice }</pre>
       <pre>errorMessage: ${ errorMessage }</pre>
       <pre>warningMessages: ${ warningMessages }</pre>
       <pre>infoMessage: ${ infoMessage }</pre>
       <pre>isCreated: ${ isCreated }</pre>
-    </div>
+    </main>
   </div>
 </div>
 
@@ -143,10 +141,6 @@
   // Vueインスタンスを作成
   const app = createApp({
     setup() {
-      //////////
-      // data
-      //////////
-      // 入力フォームの内容
       // タイトル
       const bookTitle = ref("");
       // 価格
@@ -158,17 +152,11 @@
       const warningMessages = ref([]);
       const infoMessage = ref("");
 
-      //////////
-      // computed
-      //////////
       // 本が登録済みかどうか
       const isCreated = computed(() => {
         return bookId.value !== undefined;
       });
 
-      //////////
-      // methods
-      //////////
       // メッセージクリア
       const clearMessages = () => {
         errorMessage.value = "";
@@ -189,13 +177,13 @@
           }
         })
           .then(response => {
+            // リアクティブなデータを更新
             infoMessage.value = isCreated.value ? "更新しました。" : "登録しました。";
             bookId.value = response.data.id;
             bookTitle.value = response.data.title;
             bookPrice.value = response.data.price;
           })
           .catch(error => {
-            console.log("error=", error);
             // エラーの種類に応じたハンドリングをおこなう
             switch (error.response?.status) {
               // バリデーションNG
