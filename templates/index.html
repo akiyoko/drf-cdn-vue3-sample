@@ -3,26 +3,33 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>DRF Sample</title>
   <!-- CSS -->
+  <!-- TODO -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" />
   <!-- Vuetify -->
-  <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuetify@3.0.0-beta.11/dist/vuetify.min.css" />-->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuetify@3.0.0-beta.11/dist/vuetify.min.css" />
+  <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuetify@2.6.10/dist/vuetify.min.css" />-->
   <!-- BootstrapVue -->
-  <link rel="stylesheet" href="https://unpkg.com/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+  <!--<link rel="stylesheet" href="https://unpkg.com/bootstrap@4.5.3/dist/css/bootstrap.min.css" />-->
   <!-- TODO: Temporarily use bootstrap-vue-3 -->
   <!--<link rel="stylesheet" href="https://unpkg.com/bootstrap-vue-3@0.1.9/dist/bootstrap-vue-3.css" />-->
   <!--  <link rel="stylesheet" href="https://unpkg.com/bootstrap-vue@2.21.2/dist/bootstrap-vue.min.css" />-->
   <style>
-    main.box {
-      border: 1px solid #cccccc;
-      margin-top: 4em;
-      padding: 2em;
-      width: 600px;
+    section#message {
+      margin-top: 64px;
+      height: 96px;
     }
-    div#debug {
-      margin-top: 2em;
+    section#main {
+      margin-top: 20px;
+    }
+    section#debug {
+      margin-top: 20px;
+      font-size: .9em;
+      /*font-style: italic;*/
+      color: #666666;
     }
     [v-cloak] {
       display: none;
@@ -31,90 +38,111 @@
 </head>
 <body>
 <div id="app" v-cloak>
-  <!-- ヘッダナビゲーション -->
-  <div id="header">
-    <b-navbar type="dark" variant="dark">
-      <a class="navbar-brand" href="/">DRF Sample</a>
-      <b-navbar-nav class="ml-auto">
-        {% if user.is_authenticated %}
-        <b-nav-item-dropdown right>
-          <template slot="button-content">{{ user.get_username }}</template>
-          <b-dropdown-item href="{% url 'rest_framework:logout' %}">
-            ログアウト
-          </b-dropdown-item>
-        </b-nav-item-dropdown>
-        {% else %}
-        <b-nav-item href="{% url 'rest_framework:login' %}">
-          ログイン
-        </b-nav-item>
-        {% endif %}
-      </b-navbar-nav>
-    </b-navbar>
-  </div>
+  <!-- ヘッダセクション -->
+  <section id="header">
+    <v-layout>
+      <v-app-bar
+        color="indigo"
+      >
+        <v-btn href="/">
+          DRF Sample
+        </v-btn>
+      </v-app-bar>
+    </v-layout>
+  </section>
 
-  <!-- メッセージエリア -->
-  <div id="messages">
-    <b-alert variant="danger" show v-show="errorMessage" class="mb-0">
-      ${ errorMessage }
-    </b-alert>
-    <b-alert variant="warning" show v-show="warningMessages.length > 0" class="mb-0">
-      <p v-for="warningMessage in warningMessages" :key="warningMessage" class="mb-0">
-        ${ warningMessage }
-      </p>
-    </b-alert>
-    <b-alert variant="info" show v-show="infoMessage" class="mb-0">
-      ${ infoMessage }
-    </b-alert>
-  </div>
+  <!-- メッセージセクション -->
+  <section id="message">
+    <v-container>
+      <v-alert
+        type="error"
+        density="comfortable"
+        v-show="errorMessage"
+      >
+        ${ errorMessage }
+      </v-alert>
+      <v-alert
+        type="warning"
+        density="comfortable"
+        v-show="warningMessages.length > 0"
+      >
+        <p v-for="warningMessage in warningMessages" :key="warningMessage">
+          ${ warningMessage }
+        </p>
+      </v-alert>
+      <v-alert
+        type="info"
+        density="comfortable"
+        v-show="infoMessage"
+      >
+        ${ infoMessage }
+      </v-alert>
+    </v-container>
+  </section>
 
-  <!-- メインエリア -->
-  <div id="main-page">
-    <main class="container box">
-      <p class="h5 mb-4">ホーム</p>
-      <form @submit.prevent="submitSave">
-        <div class="row form-group">
-          <label class="col-sm-3 col-form-label">タイトル</label>
-          <div class="col-sm-8">
-            <input type="text" class="form-control" v-model="bookTitle" />
-          </div>
-        </div>
-        <div class="row form-group">
-          <label class="col-sm-3 col-form-label">価格</label>
-          <div class="col-sm-8">
-            <input type="text" class="form-control" v-model="bookPrice" />
-          </div>
-        </div>
-        <div class="row text-center mt-5">
-          <div class="col-sm-12">
-            <button type="submit" variant="primary">
-              ${ isCreated ? '更新' : '登録' }
-            </button>
-          </div>
-        </div>
-      </form>
-    </main>
-  </div>
+  <!-- メインセクション -->
+  <section id="main">
+    <v-card
+      class="mx-auto pa-4"
+      width="600"
+    >
+      <v-card-title
+        class="mb-4"
+      >
+        ホーム
+      </v-card-title>
 
-  <!-- デバッグ -->
-  <div id="debug">
-    <main class="container">
-      <pre>bookTitle: ${ bookTitle }</pre>
-      <pre>bookPrice: ${ bookPrice }</pre>
-      <pre>errorMessage: ${ errorMessage }</pre>
-      <pre>warningMessages: ${ warningMessages }</pre>
-      <pre>infoMessage: ${ infoMessage }</pre>
-      <pre>isCreated: ${ isCreated }</pre>
-    </main>
-  </div>
+      <v-card-text
+      >
+        <v-form
+        >
+          <v-text-field
+            v-model="bookTitle"
+            label="タイトル"
+          ></v-text-field>
+          <v-text-field
+            v-model="bookPrice"
+            label="価格"
+          ></v-text-field>
+        </v-form>
+      </v-card-text>
+
+      <v-card-actions>
+        <v-btn
+          variant="elevated"
+          color="success"
+          class="mx-auto"
+          @click="submitSave"
+        >
+          ${ isCreated ? '更新' : '登録' }
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </section>
+
+  <!-- デバッグセクション -->
+  <section id="debug">
+    <v-container>
+    <pre>
+bookTitle: ${ bookTitle }
+bookPrice: ${ bookPrice }
+errorMessage: ${ errorMessage }
+warningMessages: ${ warningMessages }
+infoMessage: ${ infoMessage }
+isCreated: ${ isCreated }
+    </pre>
+    </v-container>
+  </section>
 </div>
 
 <!-- JS -->
-<!-- Vuetify -->
-<!--<script src="https://cdn.jsdelivr.net/npm/vuetify@3.0.0-beta.11/dist/vuetify.min.js"></script>-->
-<!-- Vue & BootstrapVue -->
-<!--<script src="https://unpkg.com/babel-polyfill@6.26.0/dist/polyfill.min.js"></script>-->
-<script src="//polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver" crossorigin="anonymous"></script>
+<!-- Vue -->
 <script src="https://unpkg.com/vue@3.2.39/dist/vue.global.prod.js"></script>
+<!-- Vuetify -->
+<!-- https://next.vuetifyjs.com/en/getting-started/browser-support/ -->
+<script src="https://polyfill.io/v3/polyfill.min.js?features=IntersectionObserver,ResizeObserver,WebAnimations,Object.fromEntries,Array.prototype.at"></script>
+<script src="https://cdn.jsdelivr.net/npm/vuetify@3.0.0-beta.11/dist/vuetify.min.js"></script>
+<!--<script src="https://cdn.jsdelivr.net/npm/vuetify@2.6.10/dist/vuetify.js"></script>-->
 <!-- TODO: Temporarily use bootstrap-vue-3 -->
 <!--<script src="https://unpkg.com/bootstrap-vue-3@0.1.9/dist/bootstrap-vue-3.umd.js"></script>-->
 <!--<script src="https://unpkg.com/bootstrap-vue@2.21.2/dist/bootstrap-vue.min.js"></script>-->
@@ -123,6 +151,7 @@
 <script>
   // グローバルなVueオブジェクトを介してグローバルAPIの関数にアクセス
   const { createApp, ref, computed } = Vue;
+  const { createVuetify } = Vuetify;
 
   // CSRFトークンの送信設定
   axios.defaults.xsrfCookieName = "csrftoken";
@@ -178,7 +207,9 @@
         })
           .then(response => {
             // リアクティブなデータを更新
-            infoMessage.value = isCreated.value ? "更新しました。" : "登録しました。";
+            infoMessage.value = isCreated.value
+              ? "更新しました。"
+              : "登録しました。";
             bookId.value = response.data.id;
             bookTitle.value = response.data.title;
             bookPrice.value = response.data.price;
@@ -219,6 +250,8 @@
   });
   // Mustache構文のバッティングを回避
   app.config.compilerOptions.delimiters = ["${", "}"];
+  // Vuetifyをインストール
+  app.use(createVuetify());
   app.mount("#app");
 </script>
 </body>
