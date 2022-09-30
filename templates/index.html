@@ -37,49 +37,46 @@
   <v-layout>
     <!-- ヘッダセクション -->
     <section id="header">
-        <v-app-bar color="grey-darken-4">
-          <v-btn href="/">DRF Sample</v-btn>
-          <v-spacer></v-spacer>
-          {% if user.is_authenticated %}
-          <v-btn>
-            {{ user.get_username }}
-            <v-menu
-              activator="parent"
-            >
-              <v-list>
-                <!--
-                <v-list-item>
-                  <v-list-item-title>
-                    <v-btn variant="flat" href="{% url 'rest_framework:logout' %}">ログアウト</v-btn>
-                  </v-list-item-title>
-                </v-list-item>
-                -->
-                <v-list-item>
-                  <v-list-item-title>
-                    <v-form action="{% url 'rest_framework:logout' %}" method="post">
-                      {% csrf_token %}
-                      <v-btn variant="flat" type="submit">ログアウト</v-btn>
-                    </v-form>
-                  </v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-          </v-btn>
-          {% else %}
-          <v-btn href="{% url 'rest_framework:login' %}">ログイン</v-btn>
-          {% endif %}
-        </v-app-bar>
+      <v-app-bar color="grey-darken-4">
+        <v-btn href="/">DRF Sample</v-btn>
+        <v-spacer></v-spacer>
+        {% if user.is_authenticated %}
+        <v-btn>
+          {{ user.get_username }}
+          <v-menu activator="parent">
+            <v-list>
+              <!--
+              <v-list-item>
+                <v-list-item-title>
+                  <v-btn variant="flat" href="{% url 'rest_framework:logout' %}">ログアウト</v-btn>
+                </v-list-item-title>
+              </v-list-item>
+              -->
+              <v-list-item>
+                <v-list-item-title>
+                  <v-form
+                    action="{% url 'rest_framework:logout' %}"
+                    method="post"
+                  >
+                    {% csrf_token %}
+                    <v-btn variant="flat" type="submit">ログアウト</v-btn>
+                  </v-form>
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-btn>
+        {% else %}
+        <v-btn href="{% url 'rest_framework:login' %}">ログイン</v-btn>
+        {% endif %}
+      </v-app-bar>
     </section>
   </v-layout>
 
   <v-container>
     <!-- メッセージセクション -->
     <section id="message">
-      <v-alert
-        type="error"
-        density="comfortable"
-        v-show="errorMessage"
-      >
+      <v-alert type="error" density="comfortable" v-show="errorMessage">
         ${ errorMessage }
       </v-alert>
       <v-alert
@@ -91,40 +88,20 @@
           ${ warningMessage }
         </p>
       </v-alert>
-      <v-alert
-        type="info"
-        density="comfortable"
-        v-show="infoMessage"
-      >
+      <v-alert type="info" density="comfortable" v-show="infoMessage">
         ${ infoMessage }
       </v-alert>
     </section>
 
     <!-- メインセクション -->
     <section id="main">
-      <v-card
-        class="mx-auto pa-8"
-        elevation="4"
-        width="600"
-      >
-        <v-card-title
-          class="mb-8"
-        >
-          ホーム
-        </v-card-title>
+      <v-card class="mx-auto pa-8" elevation="4" width="600">
+        <v-card-title class="mb-8"> ホーム</v-card-title>
 
-        <v-card-text
-        >
-          <v-form
-          >
-            <v-text-field
-              v-model="bookTitle"
-              label="タイトル"
-            ></v-text-field>
-            <v-text-field
-              v-model="bookPrice"
-              label="価格"
-            ></v-text-field>
+        <v-card-text>
+          <v-form>
+            <v-text-field v-model="bookTitle" label="タイトル"></v-text-field>
+            <v-text-field v-model="bookPrice" label="価格"></v-text-field>
           </v-form>
         </v-card-text>
 
@@ -166,110 +143,110 @@ isCreated: ${ isCreated }
 <script src="https://unpkg.com/axios@0.27.2/dist/axios.min.js"></script>
 
 <script>
-  // グローバルなVueオブジェクトを介してグローバルAPIの関数にアクセス
-  const { createApp, ref, computed } = Vue;
-  const { createVuetify } = Vuetify;
+// グローバルなVueオブジェクトを介してグローバルAPIの関数にアクセス
+const { createApp, ref, computed } = Vue;
+const { createVuetify } = Vuetify;
 
-  // CSRFトークンの送信設定
-  axios.defaults.xsrfCookieName = "csrftoken";
-  axios.defaults.xsrfHeaderName = "X-CSRFToken";
+// CSRFトークンの送信設定
+axios.defaults.xsrfCookieName = "csrftoken";
+axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
-  // APIクライアント
-  const api = axios.create({
-    baseURL: "/api/v1/",
-    timeout: 5000,
-    headers: {
-      "Content-Type": "application/json",
-      "X-Requested-With": "XMLHttpRequest"
-    }
-  });
+// APIクライアント
+const api = axios.create({
+  baseURL: "/api/v1/",
+  timeout: 5000,
+  headers: {
+    "Content-Type": "application/json",
+    "X-Requested-With": "XMLHttpRequest",
+  },
+});
 
-  // Vueインスタンスを作成
-  const app = createApp({
-    setup() {
-      // タイトル
-      const bookTitle = ref("");
-      // 価格
-      const bookPrice = ref(0);
-      // 更新時に利用する本のID（デフォルト値はundefined）
-      const bookId = ref();
-      // メッセージエリアに表示するメッセージ
-      const errorMessage = ref("");
-      const warningMessages = ref([]);
-      const infoMessage = ref("");
+// Vueインスタンスを作成
+const app = createApp({
+  setup() {
+    // タイトル
+    const bookTitle = ref("");
+    // 価格
+    const bookPrice = ref(0);
+    // 更新時に利用する本のID（デフォルト値はundefined）
+    const bookId = ref();
+    // メッセージエリアに表示するメッセージ
+    const errorMessage = ref("");
+    const warningMessages = ref([]);
+    const infoMessage = ref("");
 
-      // 本が登録済みかどうか
-      const isCreated = computed(() => {
-        return bookId.value !== undefined;
-      });
+    // 本が登録済みかどうか
+    const isCreated = computed(() => {
+      return bookId.value !== undefined;
+    });
 
-      // メッセージクリア
-      const clearMessages = () => {
-        errorMessage.value = "";
-        warningMessages.value = [];
-        infoMessage.value = "";
-      };
-      // 登録・更新ボタン押下時に呼び出されるメソッド
-      const submitSave = () => {
-        clearMessages();
-        api({
-          // 登録済みかどうかでHTTPメソッドとエンドポイントを切り替える
-          method: isCreated.value ? "put" : "post",
-          url: isCreated.value ? "/books/" + bookId.value + "/" : "/books/",
-          data: {
-            id: bookId.value,
-            title: bookTitle.value,
-            price: bookPrice.value
-          }
+    // メッセージクリア
+    const clearMessages = () => {
+      errorMessage.value = "";
+      warningMessages.value = [];
+      infoMessage.value = "";
+    };
+    // 登録・更新ボタン押下時に呼び出されるメソッド
+    const submitSave = () => {
+      clearMessages();
+      api({
+        // 登録済みかどうかでHTTPメソッドとエンドポイントを切り替える
+        method: isCreated.value ? "put" : "post",
+        url: isCreated.value ? "/books/" + bookId.value + "/" : "/books/",
+        data: {
+          id: bookId.value,
+          title: bookTitle.value,
+          price: bookPrice.value,
+        },
+      })
+        .then((response) => {
+          // リアクティブなデータを更新
+          infoMessage.value = isCreated.value
+            ? "更新しました。"
+            : "登録しました。";
+          bookId.value = response.data.id;
+          bookTitle.value = response.data.title;
+          bookPrice.value = response.data.price;
         })
-          .then(response => {
-            // リアクティブなデータを更新
-            infoMessage.value = isCreated.value
-              ? "更新しました。"
-              : "登録しました。";
-            bookId.value = response.data.id;
-            bookTitle.value = response.data.title;
-            bookPrice.value = response.data.price;
-          })
-          .catch(error => {
-            // エラーの種類に応じたハンドリングをおこなう
-            switch (error.response?.status) {
-              // バリデーションNG
-              case 400:
-                // オブジェクトのプロパティの値（メッセージの配列）をフラットな配列に変換
-                const messages = Object.values(error.response.data).flat();
-                warningMessages.value = messages;
-                break;
-              // 認証エラー
-              case 401:
-                errorMessage.value = "認証エラー";
-                break;
-              // 権限エラー
-              case 403:
-                errorMessage.value = "権限エラーです。";
-                break;
-              // その他のエラー
-              default:
-                errorMessage.value = "想定外のエラーです。";
-            }
-          });
-      };
-      return {
-        bookTitle,
-        bookPrice,
-        errorMessage,
-        warningMessages,
-        infoMessage,
-        isCreated,
-        submitSave
-      };
-    }
-  });
-  // Mustache構文のバッティングを回避
-  app.config.compilerOptions.delimiters = ["${", "}"];
-  // Vuetifyをインストール
-  app.use(createVuetify());
-  app.mount("#app");
+        .catch((error) => {
+          // エラーの種類に応じたハンドリングをおこなう
+          switch (error.response?.status) {
+            // バリデーションNG
+            case 400:
+              // オブジェクトのプロパティの値（メッセージの配列）をフラットな配列に変換
+              const messages = Object.values(error.response.data).flat();
+              warningMessages.value = messages;
+              break;
+            // 認証エラー
+            case 401:
+              errorMessage.value = "認証エラー";
+              break;
+            // 権限エラー
+            case 403:
+              errorMessage.value = "権限エラーです。";
+              break;
+            // その他のエラー
+            default:
+              errorMessage.value = "想定外のエラーです。";
+          }
+        });
+    };
+    return {
+      bookTitle,
+      bookPrice,
+      errorMessage,
+      warningMessages,
+      infoMessage,
+      isCreated,
+      submitSave,
+    };
+  },
+});
+// Mustache構文のバッティングを回避
+app.config.compilerOptions.delimiters = ["${", "}"];
+// Vuetifyをインストール
+app.use(createVuetify());
+app.mount("#app");
 </script>
 </body>
 </html>
