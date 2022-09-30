@@ -11,25 +11,21 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" />
   <!-- Vuetify -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuetify@3.0.0-beta.11/dist/vuetify.min.css" />
-  <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuetify@2.6.10/dist/vuetify.min.css" />-->
-  <!-- BootstrapVue -->
-  <!--<link rel="stylesheet" href="https://unpkg.com/bootstrap@4.5.3/dist/css/bootstrap.min.css" />-->
-  <!-- TODO: Temporarily use bootstrap-vue-3 -->
-  <!--<link rel="stylesheet" href="https://unpkg.com/bootstrap-vue-3@0.1.9/dist/bootstrap-vue-3.css" />-->
-  <!--  <link rel="stylesheet" href="https://unpkg.com/bootstrap-vue@2.21.2/dist/bootstrap-vue.min.css" />-->
   <style>
+    section#header {
+      height: 64px;
+    }
     section#message {
-      margin-top: 64px;
-      height: 96px;
+      min-height: 64px;
     }
     section#main {
-      margin-top: 20px;
+      margin-top: 36px;
     }
     section#debug {
       margin-top: 20px;
-      font-size: .9em;
-      /*font-style: italic;*/
-      color: #666666;
+    }
+    .v-btn {
+      text-transform: none;
     }
     [v-cloak] {
       display: none;
@@ -38,22 +34,47 @@
 </head>
 <body>
 <div id="app" v-cloak>
-  <!-- ヘッダセクション -->
-  <section id="header">
-    <v-layout>
-      <v-app-bar
-        color="indigo"
-      >
-        <v-btn href="/">
-          DRF Sample
-        </v-btn>
-      </v-app-bar>
-    </v-layout>
-  </section>
+  <v-layout>
+    <!-- ヘッダセクション -->
+    <section id="header">
+        <v-app-bar color="grey-darken-4">
+          <v-btn href="/">DRF Sample</v-btn>
+          <v-spacer></v-spacer>
+          {% if user.is_authenticated %}
+          <v-btn>
+            {{ user.get_username }}
+            <v-menu
+              activator="parent"
+            >
+              <v-list>
+                <!--
+                <v-list-item>
+                  <v-list-item-title>
+                    <v-btn variant="flat" href="{% url 'rest_framework:logout' %}">ログアウト</v-btn>
+                  </v-list-item-title>
+                </v-list-item>
+                -->
+                <v-list-item>
+                  <v-list-item-title>
+                    <v-form action="{% url 'rest_framework:logout' %}" method="post">
+                      {% csrf_token %}
+                      <v-btn variant="flat" type="submit">ログアウト</v-btn>
+                    </v-form>
+                  </v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </v-btn>
+          {% else %}
+          <v-btn href="{% url 'rest_framework:login' %}">ログイン</v-btn>
+          {% endif %}
+        </v-app-bar>
+    </section>
+  </v-layout>
 
-  <!-- メッセージセクション -->
-  <section id="message">
-    <v-container>
+  <v-container>
+    <!-- メッセージセクション -->
+    <section id="message">
       <v-alert
         type="error"
         density="comfortable"
@@ -77,77 +98,73 @@
       >
         ${ infoMessage }
       </v-alert>
-    </v-container>
-  </section>
+    </section>
 
-  <!-- メインセクション -->
-  <section id="main">
-    <v-card
-      class="mx-auto pa-4"
-      width="600"
-    >
-      <v-card-title
-        class="mb-4"
+    <!-- メインセクション -->
+    <section id="main">
+      <v-card
+        class="mx-auto pa-8"
+        elevation="4"
+        width="600"
       >
-        ホーム
-      </v-card-title>
-
-      <v-card-text
-      >
-        <v-form
+        <v-card-title
+          class="mb-8"
         >
-          <v-text-field
-            v-model="bookTitle"
-            label="タイトル"
-          ></v-text-field>
-          <v-text-field
-            v-model="bookPrice"
-            label="価格"
-          ></v-text-field>
-        </v-form>
-      </v-card-text>
+          ホーム
+        </v-card-title>
 
-      <v-card-actions>
-        <v-btn
-          variant="elevated"
-          color="success"
-          class="mx-auto"
-          @click="submitSave"
+        <v-card-text
         >
-          ${ isCreated ? '更新' : '登録' }
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </section>
+          <v-form
+          >
+            <v-text-field
+              v-model="bookTitle"
+              label="タイトル"
+            ></v-text-field>
+            <v-text-field
+              v-model="bookPrice"
+              label="価格"
+            ></v-text-field>
+          </v-form>
+        </v-card-text>
 
-  <!-- デバッグセクション -->
-  <section id="debug">
-    <v-container>
-    <pre>
+        <v-card-actions>
+          <v-btn
+            variant="elevated"
+            color="success"
+            class="mx-auto"
+            @click="submitSave"
+          >
+            ${ isCreated ? '更新' : '登録' }
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </section>
+
+    <!-- デバッグセクション -->
+    <section id="debug">
+      <pre>
 bookTitle: ${ bookTitle }
 bookPrice: ${ bookPrice }
 errorMessage: ${ errorMessage }
 warningMessages: ${ warningMessages }
 infoMessage: ${ infoMessage }
 isCreated: ${ isCreated }
-    </pre>
-    </v-container>
-  </section>
+      </pre>
+    </section>
+  </v-container>
 </div>
 
 <!-- JS -->
 <!-- Vue -->
 <script src="https://unpkg.com/vue@3.2.39/dist/vue.global.prod.js"></script>
 <!-- Vuetify -->
-<!-- https://next.vuetifyjs.com/en/getting-started/browser-support/ -->
+<!-- TODO: https://next.vuetifyjs.com/en/getting-started/browser-support/ より -->
 <script src="https://polyfill.io/v3/polyfill.min.js?features=IntersectionObserver,ResizeObserver,WebAnimations,Object.fromEntries,Array.prototype.at"></script>
 <script src="https://cdn.jsdelivr.net/npm/vuetify@3.0.0-beta.11/dist/vuetify.min.js"></script>
-<!--<script src="https://cdn.jsdelivr.net/npm/vuetify@2.6.10/dist/vuetify.js"></script>-->
-<!-- TODO: Temporarily use bootstrap-vue-3 -->
-<!--<script src="https://unpkg.com/bootstrap-vue-3@0.1.9/dist/bootstrap-vue-3.umd.js"></script>-->
-<!--<script src="https://unpkg.com/bootstrap-vue@2.21.2/dist/bootstrap-vue.min.js"></script>-->
 <!-- axios -->
 <script src="https://unpkg.com/axios@0.27.2/dist/axios.min.js"></script>
+
 <script>
   // グローバルなVueオブジェクトを介してグローバルAPIの関数にアクセス
   const { createApp, ref, computed } = Vue;
