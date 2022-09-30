@@ -245,7 +245,8 @@ const app = createApp({
 // Mustache構文のバッティングを回避
 app.config.compilerOptions.delimiters = ["${", "}"];
 // Vuetifyをインストール
-app.use(createVuetify());
+const vuetify = createVuetify();
+app.use(vuetify);
 app.mount("#app");
 </script>
 </body>
