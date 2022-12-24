@@ -2,13 +2,19 @@
 {% load static %}
 <html lang="ja">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>DRF Sample</title>
   <!-- CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.x/css/materialdesignicons.min.css" />
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@mdi/font@7.x/css/materialdesignicons.min.css"
+  />
   <!-- Vuetify -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuetify@3.0.6/dist/vuetify.min.css" />
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/vuetify@3.0.6/dist/vuetify.min.css"
+  />
   <style>
     #message {
       min-height: 110px;
@@ -116,13 +122,13 @@ isCreated: ${ isCreated }
 </div>
 
 <!-- JS -->
+<!-- axios -->
+<script src="https://unpkg.com/axios@1.2.1/dist/axios.min.js"></script>
 <!-- Vue -->
 <script src="https://unpkg.com/vue@3.2.45/dist/vue.global.js"></script>
 <!-- Vuetify -->
 <script src="https://polyfill.io/v3/polyfill.min.js?features=IntersectionObserver,ResizeObserver,WebAnimations,Object.fromEntries,Array.prototype.at"></script>
 <script src="https://cdn.jsdelivr.net/npm/vuetify@3.0.6/dist/vuetify.min.js"></script>
-<!-- axios -->
-<script src="https://unpkg.com/axios@1.2.1/dist/axios.min.js"></script>
 
 <script>
 // グローバルなVueオブジェクトを介してグローバルAPIの関数にアクセス
