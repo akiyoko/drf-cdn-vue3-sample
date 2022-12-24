@@ -6,23 +6,12 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>DRF Sample</title>
   <!-- CSS -->
-  <!-- TODO -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.x/css/materialdesignicons.min.css" />
   <!-- Vuetify -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuetify@3.0.0-beta.11/dist/vuetify.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuetify@3.0.6/dist/vuetify.min.css" />
   <style>
-    section#header {
-      height: 64px;
-    }
-    section#message {
-      min-height: 64px;
-    }
-    section#main {
-      margin-top: 36px;
-    }
-    section#debug {
-      margin-top: 20px;
+    #message {
+      min-height: 110px;
     }
     .v-btn {
       text-transform: none;
@@ -34,24 +23,18 @@
 </head>
 <body>
 <div id="app" v-cloak>
-  <v-layout>
-    <!-- ヘッダセクション -->
-    <section id="header">
-      <v-app-bar color="grey-darken-4">
+  <v-app>
+    <!-- ヘッダ -->
+    <v-app-bar id="header" color="grey-darken-4">
+      <v-app-bar-title>
         <v-btn href="/">DRF Sample</v-btn>
-        <v-spacer></v-spacer>
+      </v-app-bar-title>
+      <template v-slot:append>
         {% if user.is_authenticated %}
         <v-btn>
           {{ user.get_username }}
           <v-menu activator="parent">
             <v-list>
-              <!--
-              <v-list-item>
-                <v-list-item-title>
-                  <v-btn variant="flat" href="{% url 'rest_framework:logout' %}">ログアウト</v-btn>
-                </v-list-item-title>
-              </v-list-item>
-              -->
               <v-list-item>
                 <v-list-item-title>
                   <v-form
@@ -69,78 +52,77 @@
         {% else %}
         <v-btn href="{% url 'rest_framework:login' %}">ログイン</v-btn>
         {% endif %}
-      </v-app-bar>
-    </section>
-  </v-layout>
+      </template>
+    </v-app-bar>
 
-  <v-container>
-    <!-- メッセージセクション -->
-    <section id="message">
-      <v-alert type="error" density="comfortable" v-show="errorMessage">
-        ${ errorMessage }
-      </v-alert>
-      <v-alert
-        type="warning"
-        density="comfortable"
-        v-show="warningMessages.length > 0"
-      >
-        <p v-for="warningMessage in warningMessages" :key="warningMessage">
-          ${ warningMessage }
-        </p>
-      </v-alert>
-      <v-alert type="info" density="comfortable" v-show="infoMessage">
-        ${ infoMessage }
-      </v-alert>
-    </section>
+    <v-main>
+      <!-- メッセージ -->
+      <v-container id="message">
+        <v-alert type="error" density="comfortable" v-show="errorMessage">
+          ${ errorMessage }
+        </v-alert>
+        <v-alert
+          type="warning"
+          density="comfortable"
+          v-show="warningMessages.length > 0"
+        >
+          <p v-for="warningMessage in warningMessages" :key="warningMessage">
+            ${ warningMessage }
+          </p>
+        </v-alert>
+        <v-alert type="info" density="comfortable" v-show="infoMessage">
+          ${ infoMessage }
+        </v-alert>
+      </v-container>
 
-    <!-- メインセクション -->
-    <section id="main">
-      <v-card class="mx-auto pa-8" elevation="4" width="600">
-        <v-card-title class="mb-8"> ホーム</v-card-title>
+      <!-- 入力フォーム -->
+      <v-container id="form">
+        <v-card class="mx-auto pa-8" elevation="4" width="600">
+          <v-card-title class="mb-8"> ホーム</v-card-title>
 
-        <v-card-text>
-          <v-form>
-            <v-text-field v-model="bookTitle" label="タイトル"></v-text-field>
-            <v-text-field v-model="bookPrice" label="価格"></v-text-field>
-          </v-form>
-        </v-card-text>
+          <v-card-text>
+            <v-form>
+              <v-text-field v-model="bookTitle" label="タイトル"></v-text-field>
+              <v-text-field v-model="bookPrice" label="価格"></v-text-field>
+            </v-form>
+          </v-card-text>
 
-        <v-card-actions>
-          <v-btn
-            variant="elevated"
-            color="success"
-            class="mx-auto"
-            @click="submitSave"
-          >
-            ${ isCreated ? '更新' : '登録' }
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </section>
+          <v-card-actions>
+            <v-btn
+              variant="elevated"
+              color="success"
+              class="mx-auto"
+              @click="submitSave"
+            >
+              ${ isCreated ? '更新' : '登録' }
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-container>
 
-    <!-- デバッグセクション -->
-    <section id="debug">
-      <pre>
+      <!-- デバッグ -->
+      <v-container id="debug">
+        <pre>
 bookTitle: ${ bookTitle }
 bookPrice: ${ bookPrice }
 errorMessage: ${ errorMessage }
 warningMessages: ${ warningMessages }
 infoMessage: ${ infoMessage }
 isCreated: ${ isCreated }
-      </pre>
-    </section>
-  </v-container>
+        </pre>
+      </v-container>
+    </v-main>
+  </v-app>
 </div>
 
 <!-- JS -->
 <!-- Vue -->
-<script src="https://unpkg.com/vue@3.2.39/dist/vue.global.prod.js"></script>
+<script src="https://unpkg.com/vue@3.2.45/dist/vue.global.js"></script>
 <!-- Vuetify -->
-<!-- TODO: https://next.vuetifyjs.com/en/getting-started/browser-support/ より -->
 <script src="https://polyfill.io/v3/polyfill.min.js?features=IntersectionObserver,ResizeObserver,WebAnimations,Object.fromEntries,Array.prototype.at"></script>
-<script src="https://cdn.jsdelivr.net/npm/vuetify@3.0.0-beta.11/dist/vuetify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vuetify@3.0.6/dist/vuetify.min.js"></script>
 <!-- axios -->
-<script src="https://unpkg.com/axios@0.27.2/dist/axios.min.js"></script>
+<script src="https://unpkg.com/axios@1.2.1/dist/axios.min.js"></script>
 
 <script>
 // グローバルなVueオブジェクトを介してグローバルAPIの関数にアクセス
