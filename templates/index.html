@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>DRF Sample</title>
   <!-- CSS -->
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/@mdi/font@7.x/css/materialdesignicons.min.css"
-  />
   <!-- Vuetify -->
   <link
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/vuetify@3.0.6/dist/vuetify.min.css"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css"
   />
   <style>
     #message {
@@ -110,6 +110,7 @@
         <pre>
 bookTitle: ${ bookTitle }
 bookPrice: ${ bookPrice }
+bookId: ${ bookId }
 errorMessage: ${ errorMessage }
 warningMessages: ${ warningMessages }
 infoMessage: ${ infoMessage }
@@ -120,14 +121,14 @@ isCreated: ${ isCreated }
   </v-app>
 </div>
 
-<!-- JS -->
-<!-- axios -->
-<script src="https://unpkg.com/axios@1.2.1/dist/axios.min.js"></script>
+<!-- JavaScript -->
 <!-- Vue -->
-<script src="https://unpkg.com/vue@3.2.45/dist/vue.global.js"></script>
+<script src="https://unpkg.com/vue@3.2.45/dist/vue.global.prod.js"></script>
 <!-- Vuetify -->
 <script src="https://polyfill.io/v3/polyfill.min.js?features=IntersectionObserver,ResizeObserver,WebAnimations,Object.fromEntries,Array.prototype.at"></script>
 <script src="https://cdn.jsdelivr.net/npm/vuetify@3.0.6/dist/vuetify.min.js"></script>
+<!-- axios -->
+<script src="https://unpkg.com/axios@1.2.1/dist/axios.min.js"></script>
 
 <script>
 // グローバルAPIの関数を定義
@@ -226,6 +227,8 @@ const app = createApp({
       infoMessage,
       isCreated,
       submitSave,
+      // デバッグ用
+      bookId,
     };
   },
 });
